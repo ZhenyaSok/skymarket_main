@@ -2,8 +2,8 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
 from users.models import User
-from .models import Ad
-from .serializers import AdSerializer
+from .models import Ad, Comment
+from .serializers import AdSerializer, CommentSerializer
 
 
 class AdViewSetsTestCase(APITestCase):
@@ -35,6 +35,7 @@ class AdViewSetsTestCase(APITestCase):
 
 
     def test_create_ad(self):
+        """Тест на создание объявления"""
         url = reverse('ads:ads-list')
         data = {
             'title': 'second ad',
@@ -47,11 +48,13 @@ class AdViewSetsTestCase(APITestCase):
         self.assertEqual(author, ad.author)
 
     def test_retrieve_ad(self):
+
         url = reverse('ads:ads-detail', args=[self.ad.pk])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_ad(self):
+        """Тест на редактирование объявления"""
         url = reverse('ads:ads-detail', args=[self.ad.pk])
         data = {
             'title': 'update second ad',
@@ -63,16 +66,51 @@ class AdViewSetsTestCase(APITestCase):
         self.assertEqual(val.title, 'update second ad')
 
     def test_delete_ad(self):
+        """Тест на удаление объявления"""
         url = reverse('ads:ads-detail', args=[self.ad.pk])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Ad.objects.filter(pk=self.ad.pk).exists())
 
 
+class MyAdTestCase(APITestCase):
+
+    def setUp(self) -> None:
+        self.user = User.objects.create_user(
+            email='test@iah.com',
+            password='password',
+            first_name='test',
+            last_name='test',
+            phone='5415'
+        )
+        self.client.force_authenticate(user=self.user)
+    def test_my_ad_list(self):
+        """Список объявлений пользователя (личных)"""
+
+        response = self.client.get(reverse('ads:user_ad'),)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), {'count': 0, 'next': None, 'previous': None, 'results': []})
 
 
 
+# class CommentViewSetsTestCase(APITestCase):
+#
+#     def setUp(self) -> None:
+#
+#         # Создадим тестовый аккаунт пользователя
+#         self.user = User.objects.create(email='test@yah.ru', password='123456')
+#         self.user2 = User.objects.create(email='test222@yah.ru', password='123456')
+#         # Создадим тестовый коммент
+#         self.ad = Ad.objects.create(title='first ad', author=self.user, price=100, description='test')
+#         self.comment = Comment.objects.create(text='first comment', author=self.user2, ad=self.ad)
+#         self.client.force_authenticate(user=self.user)  # Аутентификация пользователя
+#         self.client.force_authenticate(user=self.user2)
+#         self.serializer_ad = CommentSerializer([self.comment], many=True).data
+#
+#     def test_get_queryset_authenticated_user(self):
+#             url = reverse(f'ads:ads/{self.ad.pk}/comments-list')
 
-
-
-
+            # response = self.client.get(url)
+            # self.assertEqual(response.status_code, status.HTTP_200_OK)
+            # serializer_data = AdSerializer([self.ad], many=True).data
+            # self.assertEqual(response.data['results'], serializer_data)
