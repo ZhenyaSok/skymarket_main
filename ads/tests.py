@@ -15,14 +15,16 @@ class AdViewSetsTestCase(APITestCase):
         # Создадим тестовое объявление
         self.ad = Ad.objects.create(title='first ad', author=self.user, price=100, description='test')
         self.client.force_authenticate(user=self.user)  # Аутентификация пользователя
-        # self.serializer_ad = AdSerializer([self.ad], many=True).data
+        self.serializer_ad = AdSerializer([self.ad], many=True).data
 
     def test_get_queryset_authenticated_user(self):
         url = reverse('ads:ads-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # serializer_data = AdSerializer([self.ad], many=True).data
-        # self.assertEqual(response.data, serializer_data)
+        serializer_data = AdSerializer([self.ad], many=True).data
+        print(serializer_data)
+        print(response.data)
+        self.assertEqual(response.data['results'], serializer_data)
 
     def test_get_queryset_unauthenticated_user(self):
         # Если пользователь не зарегестрирован
