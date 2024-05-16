@@ -132,27 +132,27 @@ DJOSER = {
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('POSTGRES_DB'),
-#         'USER': os.getenv('POSTGRES_USER'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-#         'HOST': os.getenv('POSTGRES_HOST'),
-#         'PORT': os.getenv('POSTGRES_PORT'),
-#     }
-# }
-
 DATABASES = {
     'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'sky',
-            'USER': 'postgres',
-            'PASSWORD': '123456',
-            # 'HOST': 'db',
-            # 'PORT': '5432'
-        }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'PORT': os.getenv('POSTGRES_PORT'),
+    }
 }
+
+# DATABASES = {
+#     'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'sky',
+#             'USER': 'postgres',
+#             'PASSWORD': '123456',
+#             # 'HOST': 'db',
+#             # 'PORT': '5432'
+#         }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -244,13 +244,4 @@ AUTH_USER_MODEL = 'users.User'
 # EMAIL_PORT = os.getenv("EMAIL_PORT")
 
 
-# Настройки почты, для отправки
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'zhenyapaiton@yandex.ru'
-EMAIL_HOST_PASSWORD = 'yplghjyryjhqiwnd'
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = 'zhenyapaiton@yandex.ru'
 
