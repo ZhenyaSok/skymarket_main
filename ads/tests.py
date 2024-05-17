@@ -22,9 +22,8 @@ class AdViewSetsTestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         serializer_data = AdSerializer([self.ad], many=True).data
-        print(serializer_data)
-        print(response.data)
         self.assertEqual(response.data['results'], serializer_data)
+        self.assertEqual(response.json(), {'count': 0, 'next': None, 'previous': None, 'results': []})
 
     def test_get_queryset_unauthenticated_user(self):
         # Если пользователь не зарегестрирован
