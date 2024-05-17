@@ -160,7 +160,6 @@ class CommentViewSetsTestCase(APITestCase):
         }
 
         response = self.client.put(url, data)
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         val = Comment.objects.get(pk=self.comment.pk)
         self.assertEqual(val.text, 'update second comment')
