@@ -7,14 +7,13 @@ class UserManager(BaseUserManager):
     Функция создания пользователя — в нее мы передаем обязательные поля
     """
 
-    def create_user(self, email, first_name, last_name, phone, role="user", password=None):
+    def create_user(self, email, first_name, last_name, role="user", password=None):
         if not email:
             raise ValueError('Users must have an email address')
         user = self.model(
             email=self.normalize_email(email),
             first_name=first_name,
             last_name=last_name,
-            phone=phone,
             role=role,
             is_active=True
         )
@@ -24,7 +23,7 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, first_name, last_name, phone=None, password=None):
+    def create_superuser(self, email, first_name, last_name, password=None):
         """
         Функция для создания суперпользователя — с ее помощью мы создаем админинстратора
         это можно сделать с помощью команды createsuperuser
@@ -34,7 +33,6 @@ class UserManager(BaseUserManager):
             email,
             first_name=first_name,
             last_name=last_name,
-            phone=phone,
             password=password,
             role="admin"
 
