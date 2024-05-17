@@ -102,24 +102,77 @@ class MyAdTestCase(APITestCase):
 
 
 
-# class CommentViewSetsTestCase(APITestCase):
-#
-#     def setUp(self) -> None:
-#
-#         # Создадим тестовый аккаунт пользователя
-#         self.user = User.objects.create(email='test@yah.ru', password='123456')
-#         self.user2 = User.objects.create(email='test222@yah.ru', password='123456')
-#         # Создадим тестовый коммент
-#         self.ad = Ad.objects.create(title='first ad', author=self.user, price=100, description='test')
-#         self.comment = Comment.objects.create(text='first comment', author=self.user2, ad=self.ad)
-#         self.client.force_authenticate(user=self.user)  # Аутентификация пользователя
-#         self.client.force_authenticate(user=self.user2)
-#         self.serializer_ad = CommentSerializer([self.comment], many=True).data
-#
-#     def test_get_queryset_authenticated_user(self):
-#             url = reverse(f'ads:ads/{self.ad.pk}/comments-list')
+class CommentViewSetsTestCase(APITestCase):
 
-            # response = self.client.get(url)
-            # self.assertEqual(response.status_code, status.HTTP_200_OK)
-            # serializer_data = AdSerializer([self.ad], many=True).data
-            # self.assertEqual(response.data['results'], serializer_data)
+    def setUp(self) -> None:
+
+        # Создадим тестовый аккаунт пользователя
+        self.user = User.objects.create(email='test@yah.ru', password='123456')
+        self.user2 = User.objects.create(email='test222@yah.ru', password='123456')
+        # Создадим тестовый коммент
+        self.ad = Ad.objects.create(title='first ad', author=self.user, price=100, description='test')
+        self.comment = Comment.objects.create(text='first comment', author=self.user2, ad=self.ad)
+        self.client.force_authenticate(user=self.user)  # Аутентификация пользователя
+        self.client.force_authenticate(user=self.user2)
+        self.serializer_ad = CommentSerializer([self.comment], many=True).data
+
+    def test_get_queryset_authenticated_user(self):
+        url = reverse('ads:comment-list', args=[self.ad.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(Comment.objects.all().exists())
+
+    def test_get_queryset_unauthenticated_user(self):
+        # Если пользователь не зарегестрирован
+        self.client.logout()
+        url = reverse('ads:comment-list', args=[self.ad.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_create_review(self):
+        """Тестирование создания комментария"""
+        data = {
+            "text": "Test1",
+            "author": self.user.pk,
+            "ad": self.ad.pk,
+            "created_at": "2021-04-03T09:08:16.430479Z",
+
+        }
+        url = reverse('ads:comment-list', args=[self.ad.pk])
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Comment.objects.all().exists())
+
+    def test_retrieve_ad(self):
+
+        url = reverse('ads:comment-detail', args=[self.ad.pk, self.comment.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_ad(self):
+        """Тест на редактирование комментария"""
+        url = reverse('ads:comment-detail', args=[self.ad.pk, self.comment.pk])
+        data = {
+            "text": "update second comment",
+            "author": self.user.pk,
+            "ad": self.ad.pk,
+            "created_at": "2021-04-03T09:08:16.430479Z",
+        }
+
+        response = self.client.put(url, data)
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        val = Comment.objects.get(pk=self.comment.pk)
+        self.assertEqual(val.text, 'update second comment')
+
+    def test_delete_ad(self):
+        """Тест на удаление комментария"""
+        url = reverse('ads:comment-detail', args=[self.ad.pk, self.comment.pk])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Comment.objects.filter(pk=self.comment.pk).exists())
+
+
+
+
+
