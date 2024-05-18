@@ -89,8 +89,7 @@ class MyAdTestCase(APITestCase):
             email='test@iah.com',
             password='password',
             first_name='test',
-            last_name='test',
-            phone='5415'
+            last_name='test'
         )
         self.client.force_authenticate(user=self.user)
     def test_my_ad_list(self):
